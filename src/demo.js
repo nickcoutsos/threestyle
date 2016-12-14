@@ -1,5 +1,6 @@
 import * as three from 'three';
-import threestyle from './threestyle';
+
+import {applyStyle} from './threestyle';
 
 let height = window.innerHeight,
   width = window.innerWidth,
@@ -13,45 +14,23 @@ renderer.shadowMap.type = three.PCFSoftShadowMap;
 camera.position.set(10, 10, 10);
 camera.lookAt(new three.Vector3());
 
-let base = new three.Mesh(
-  new three.PlaneGeometry(30, 30),
-  threestyle.getMaterial({
-    type: 'MeshPhongMaterial',
-    color: '#aaaaaa'
-  })
-);
+let base = new three.Mesh(new three.PlaneGeometry(30, 30));
+base.userData.className = 'floor';
 base.rotation.x = -Math.PI/2;
 base.receiveShadow = true;
 
-let sphere = new three.Mesh(
-  new three.SphereGeometry(5, 20, 20),
-  threestyle.getMaterial({
-    type: 'MeshPhongMaterial',
-    color: 'red'
-  })
-);
+let sphere = new three.Mesh(new three.SphereGeometry(5, 20, 20));
+sphere.userData.className = 'dull';
 sphere.castShadow = true;
 sphere.position.set(-5, 5, 0);
 
-let box = new three.Mesh(
-  new three.BoxGeometry(5, 5, 5),
-  threestyle.getMaterial({
-    side: 'DoubleSide',
-    transparent: true,
-    opacity: 0.5,
-    color: 'blue'
-  })
-);
+let box = new three.Mesh(new three.BoxGeometry(5, 5, 5));
+box.userData.className = 'ghost'
 box.position.set(5, 5, 0);
 box.castShadow = true;
 
-let ring = new three.Mesh(
-  new three.TorusGeometry(4, 1, 8, 20),
-  threestyle.getMaterial({
-    color: 'green',
-    wireframe: true
-  })
-);
+let ring = new three.Mesh(new three.TorusGeometry(4, 1, 8, 20));
+ring.userData.className = 'matrix';
 ring.position.set(2, 2, 7);
 ring.rotation.x = Math.PI / 2;
 ring.castShadow = true;
@@ -75,6 +54,29 @@ scene.add(
   box,
   ring
 );
+
+applyStyle(scene, `
+  SphereGeometry {
+    color: red
+  }
+  BoxGeometry {
+    color: blue
+  }
+  .floor {
+    color: grey;
+  }
+  .dull {
+    shininess: 1;
+  }
+  .ghost {
+    transparent: true;
+    opacity: 0.5;
+  }
+  .matrix {
+    wireframe: true;
+    color: green;
+  }
+`);
 
 document.body.appendChild(renderer.domElement);
 renderer.render(scene, camera);
