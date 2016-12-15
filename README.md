@@ -10,49 +10,54 @@ rule syntax for defining and applying _[three.js]_ materials to scenes.
 
 ## Example Usage
 
-We first define a stylesheet with some trivially simple materials. By default a
-declaration without a `type` property will use `three.MeshBasicMaterial`.
+Set up a simple scene with some objects and a light, then apply a stylesheet.
 
-```css
-/* mystyle.three.css */
+Any object which includes a geometry can be selected by that geometry's name.
+Additionally, a property `className` in the object's userData can further
+describe the object and make sharing of style rules easier.
 
-Mesh {
-  color: 'red';
-}
-
-.sphere {
-  color: 'blue';
-}
-
-.transparent {
-  transparent: true;
-  opacity: 0.5;
-}
-
-
-```
-
-Now we set up a simple scene with a camera, and box and sphere meshes. We also
-add some user data to these meshes so that we can specify some style classes.
+Calling `applyStyle` with a given node and stylesheet will parse the stylesheet
+and traverse the graph to match nodes with rules to dynamically create and apply
+materials.
 
 ```js
 import three from 'three';
+import {applyStyle} from 'threestyle';
 
-export default scene = new three.Scene();
 let camera = new three.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 1000),
+  scene = new three.Scene()
   renderer = new three.WebGLRenderer(),
   sphere = new three.Mesh(new three.SphereGeometry(5)),
-  box = new three.Mesh(new three.BoxGeometry(5, 5, 5));
+  box = new three.Mesh(new three.BoxGeometry(5, 5, 5)),
+  light = new three.PointLight();
 
 camera.position.set(10, 10, 10);
 camera.lookAt(0, 0, 0);
 
-sphere.userData.classes = ['sphere', 'transparent'];
+light.position.set(-10, 10, 10);
+sphere.userData.className = 'transparent';
 sphere.position.set(-5, 0, 0);
-box.userData.classes = ['box'];
 box.position.set(5, 0, 0);
 
-scene.add(camera, sphere, box);
+scene.add(camera, sphere, box, light);
+
+applyStyle(
+  scene,
+  `
+    BoxGeometry {
+      color: red;
+    }
+
+    SphereGeometry {
+      color: blue;
+    }
+
+    .transparent {
+      transparent: true;
+      opacity: 0.5;
+    }
+  `
+);
 
 function render() {
   renderer.render(scene, camera);
@@ -60,21 +65,6 @@ function render() {
 }
 
 render();
-
-```
-
-To bring it all together we import the _threestyle_ library and our stylesheet.
-When we attach the stylesheet to the scene the declarations are matched up to
-objects in the graph and turned into materials. Additionally, observers are
-installed to keep track of changes to the graph that might require updating the
-materials.
-
-```js
-import threestyle from 'threestyle';
-import style from './mystyle.three.css';
-import scene from './scene';
-
-threestyle.attach(scene, style);
 
 ```
 
