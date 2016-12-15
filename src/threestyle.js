@@ -3,8 +3,30 @@ import select from './select';
 import createMaterial from './materials';
 import observe from './observe';
 
-export function getMaterial(style) {
-  return createMaterial(style);
+
+var _lastId = 0;
+var _cachedMaterials = {};
+
+/**
+ * Get a material instance made up of the declarations in the given rules.
+ *
+ * Materials are cached as they are created. A call with the same set of rules
+ * is just a lookup.
+ *
+ * @param {Array<Object>} rules - an array of rules from a CSS syntax tree.
+ * @returns {three.Material} material
+ */
+export function getMaterial(rules) {
+  let key = rules.map(({id}) => id).join(':');
+
+  if (!_cachedMaterials[key]) {
+    _cachedMaterials[key] = createMaterial(
+      [].concat(...rules.map(({declarations}) => declarations))
+        .reduce((style, {property, value}) => (style[property] = value, style), {})
+    );
+  }
+
+  return _cachedMaterials[key];
 }
 
 
@@ -32,27 +54,29 @@ export function applyStyle(graph, style) {
       .join('\n');
   }
 
-  updateStyle(graph, style);
+  let {stylesheet} = parse(style);
+  stylesheet.rules.forEach(rule => rule.id = rule.id || ++_lastId);
+
+  updateStyle(graph, stylesheet.rules);
   observe(graph, ['name', 'userData']);
-  graph.addEventListener('childUpdated', () => updateStyle(graph, style));
+  graph.addEventListener('childUpdated', () => updateStyle(graph, stylesheet.rules));
 }
 
-export function updateStyle(graph, style) {
-  let {stylesheet} = parse(style);
+
+/**
+ * Update the materials assigned to nodes in the given graph as necessary.
+ *
+ * @param {three.Object3D} graph
+ * @param {Array<Object>} rules - a set of available rules to match to the graph's nodes
+ */
+export function updateStyle(graph, rules) {
   graph.traverse(node => {
-    let matchedStyles = [].concat(
-      ...stylesheet.rules
-        .filter(({type}) => type === 'rule')
-        .filter(({selectors}) => select(selectors.join(', '))(node))
-        .map(({declarations}) =>
-          declarations.map(({property, value}) => ({[property]: value}))
-        )
+    let matchedRules = rules.filter(
+      ({selectors}) => select(selectors.join(', '))(node)
     );
 
-    if (matchedStyles.length) {
-      node.material = getMaterial(
-        Object.assign({}, ...matchedStyles)
-      );
+    if (matchedRules.length > 0) {
+      node.material = getMaterial(matchedRules);
     }
   });
 }
