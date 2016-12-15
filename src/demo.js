@@ -5,16 +5,16 @@ import {applyStyle} from './threestyle';
 let height = window.innerHeight,
   width = window.innerWidth,
   renderer = new three.WebGLRenderer(),
-  camera = new three.PerspectiveCamera(90, width / height, 1, 1000),
+  camera = new three.PerspectiveCamera(70, width / height, 1, 10000),
   scene = new three.Scene();
 
 renderer.setSize(width, height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = three.PCFSoftShadowMap;
-camera.position.set(10, 10, 10);
+camera.position.set(15, 15, 15);
 camera.lookAt(new three.Vector3());
 
-let base = new three.Mesh(new three.PlaneGeometry(30, 30));
+let base = new three.Mesh(new three.PlaneGeometry(40, 40));
 base.userData.className = 'floor';
 base.rotation.x = -Math.PI/2;
 base.receiveShadow = true;
@@ -26,7 +26,7 @@ sphere.position.set(-5, 5, 0);
 
 let box = new three.Mesh(new three.BoxGeometry(5, 5, 5));
 box.userData.className = 'ghost'
-box.position.set(5, 5, 0);
+box.position.set(5, 5, -2);
 box.castShadow = true;
 
 let ring = new three.Mesh(new three.TorusGeometry(4, 1, 8, 20));
