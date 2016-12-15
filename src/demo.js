@@ -55,31 +55,7 @@ scene.add(
   ring
 );
 
-applyStyle(scene, `
-  SphereGeometry {
-    color: red
-  }
-  BoxGeometry {
-    color: blue
-  }
-  .floor {
-    color: grey;
-  }
-  .dull {
-    shininess: 1;
-  }
-  .ghost {
-    transparent: true;
-    opacity: 0.5;
-  }
-  .selected {
-    color: yellow;
-  }
-  .matrix {
-    wireframe: true;
-    color: green;
-  }
-`);
+applyStyle(scene);
 
 document.body.appendChild(renderer.domElement);
 

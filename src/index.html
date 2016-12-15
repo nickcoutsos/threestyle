@@ -10,6 +10,31 @@
         margin: 0;
       }
     </style>
+    <style type="text/threejs+css">
+      SphereGeometry {
+        color: red
+      }
+      BoxGeometry {
+        color: blue
+      }
+      .floor {
+        color: grey;
+      }
+      .dull {
+        shininess: 1;
+      }
+      .ghost {
+        transparent: true;
+        opacity: 0.5;
+      }
+      .selected {
+        color: yellow;
+      }
+      .matrix {
+        wireframe: true;
+        color: green;
+      }
+    </style>
   </head>
   <body>
     <script src="demo.js"></script>
