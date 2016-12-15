@@ -72,6 +72,9 @@ applyStyle(scene, `
     transparent: true;
     opacity: 0.5;
   }
+  .selected {
+    color: yellow;
+  }
   .matrix {
     wireframe: true;
     color: green;
@@ -79,4 +82,34 @@ applyStyle(scene, `
 `);
 
 document.body.appendChild(renderer.domElement);
-renderer.render(scene, camera);
+
+var clock = 0,
+  lastFrame = Date.now();
+
+function render() {
+  let currentFrame = Date.now(),
+    delta = currentFrame - lastFrame;
+
+  clock += delta;
+  lastFrame = currentFrame;
+
+  if (clock >= 1000) {
+    box.userData.className = box.userData.className.indexOf('selected') === -1
+      ? 'ghost selected'
+      : 'ghost';
+
+    clock = 0;
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(render);
+}
+
+window.addEventListener('resize', () => {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	render();
+});
+
+render();
