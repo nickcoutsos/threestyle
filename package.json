@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "demo": "webpack-dev-server -d --port=8080 --host=0.0.0.0",
+    "build": "babel src -d dist --presets es2015",
+    "build-demo": "mkdir -p demo-dist/ && webpack --optimize-minimize && cp -r demo/index.html demo/assets/ demo-dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

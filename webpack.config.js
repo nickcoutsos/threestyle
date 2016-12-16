@@ -1,6 +1,6 @@
 module.exports = {
-  entry: './src/demo.js',
-  output: { path: './demo/', filename: 'demo.js' },
+  entry: './demo/index.js',
+  output: { path: './demo-dist/', filename: 'bundle.js' },
   module: {
     loaders: [
       {
@@ -15,7 +15,7 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: './src',
+    contentBase: './demo',
     historyApiFallback: true
   },
   node: {

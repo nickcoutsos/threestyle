@@ -1,6 +1,5 @@
 import * as three from 'three';
-
-import {applyStyle} from './threestyle';
+import {applyStyle} from '../src/threestyle';
 
 let height = window.innerHeight,
   width = window.innerWidth,
