@@ -68,6 +68,10 @@ function render() {
   clock += delta;
   lastFrame = currentFrame;
 
+  let rotation = delta / 1000 * .5;
+  sphere.rotation.y += rotation;
+  box.rotation.y += rotation;
+  ring.rotation.z += rotation;
   if (clock >= 1000) {
     box.userData.className = box.userData.className.indexOf('selected') === -1
       ? 'ghost selected'

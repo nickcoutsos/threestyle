@@ -77,6 +77,7 @@ lifting will hopefully come from:
 * _[reworkcss]_: parsing a stylesheet into an AST
 * _[cssauron]_: tree node matching via selectors
 
+Demo texture maps created by [soady](https://www.facebook.com/soady3D).
 
 [three.js]:https://threejs.org/
 [threess]:https://github.com/fluxio/threess/
