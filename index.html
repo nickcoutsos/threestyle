@@ -12,10 +12,14 @@
     </style>
     <style type="text/threejs+css">
       SphereGeometry {
-        color: red
+        color: white;
+        map: url(assets/ROCKY_GROUND_DIFF.png) MirroredRepeatWrapping 2 1;
+        specularMap: url(assets/ROCKY_GROUND_SPEC.png) MirroredRepeatWrapping 2 1;
+        displacementMap: url(assets/ROCKY_GROUND_DISP.png) MirroredRepeatWrapping 2 1;
+        normalMap: url(assets/ROCKY_GROUND_NORM.png) MirroredRepeatWrapping 2 1;
       }
       BoxGeometry {
-        color: blue
+        color: blue;
       }
       .floor {
         color: grey;
@@ -37,6 +41,6 @@
     </style>
   </head>
   <body>
-    <script src="demo.js"></script>
+    <script src="bundle.js"></script>
   </body>
 </html>
