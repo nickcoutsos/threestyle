@@ -25,6 +25,7 @@
     "css-parse": "2.0.0",
     "cssauron": "1.4.0",
     "json-loader": "0.5.4",
+    "postcss-value-parser": "3.3.0",
     "three": "0.82.1",
     "webpack": "1.14.0",
     "webpack-dev-server": "1.16.2"

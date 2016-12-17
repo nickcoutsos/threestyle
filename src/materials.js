@@ -1,4 +1,5 @@
 import * as three from 'three';
+import valueParser from 'postcss-value-parser';
 
 export default function createMaterial(properties, defaultType='MeshPhongMaterial') {
   let materialType = properties.type || defaultType,
@@ -45,6 +46,69 @@ const CAST_COLOR = function(v) {
   if (hex) v = Number(hex[1]);
   return new three.Color(v);
 }
+
+
+function processTextureDeclaration(value) {
+  let params = {},
+    values = valueParser(value).nodes.filter(({type}) => type !== 'space'),
+    url;
+
+  if (values[0].type !== 'function' || values[0].value !== 'url') {
+    console.error('Expected texture declaration value to begin with "url(...)"');
+    console.log(values);
+    return null;
+  }
+
+  url = values[0].nodes[0].value;
+
+  values.forEach(({type, value}) => {
+    if (type !== 'word') return;
+    if (!isNaN(Number(value))) {
+      value = Number(value);
+      if (!params.repeat) params.repeat = [value];
+      else if (params.repeat.length === 1) params.repeat.push(value);
+      else if (!params.offset) params.offset = [value];
+      else params.offset.push(value);
+    }
+    else {
+      if (MAPPING.indexOf(value) >= 0) params.mapping = CAST_CONSTANT_NAME(value);
+      else if (WRAPPING.indexOf(value) >= 0) {
+        value = CAST_CONSTANT_NAME(value);
+        if (!params.wrapS) {
+          params.wrapS = params.wrapT = value;
+        }
+        else {
+          params.wrapT = value;
+        }
+      }
+    }
+  });
+
+  if (params.repeat) params.repeat = new three.Vector2(...params.repeat);
+  let texture = Object.assign(
+    new three.TextureLoader().load(url),
+    params
+  );
+
+  return texture;
+}
+
+const MAPPING = [
+  'UVMapping',
+  'CubeReflectionMapping',
+  'CubeRefractionMapping',
+  'EquirectangularReflectionMapping',
+  'EquirectangularRefractionMapping',
+  'SphericalReflectionMapping',
+  'CubeUVReflectionMapping',
+  'CubeUVRefractionMapping'
+];
+
+const WRAPPING = [
+  'RepeatWrapping',
+  'ClampToEdgeWrapping',
+  'MirroredRepeatWrapping'
+];
 
 export const PROPERTIES = {
 	/**
@@ -201,12 +265,7 @@ export const PROPERTIES = {
 	 * MeshBasicMaterial properties
 	 *
 	 * Omitted:
-	 *	map
-	 *	aoMap
 	 *	aoMapIntensity
-	 *	specularMap
-	 *	alphaMap
-	 *	envMap
 	 *	combine
 	 *
 	 */
@@ -214,6 +273,26 @@ export const PROPERTIES = {
 		default: new three.Color( 0xffffff ),
 		cast: CAST_COLOR
 	},
+  map: {
+    default: null,
+    cast: processTextureDeclaration
+  },
+  aoMap: {
+    default: null,
+    cast: processTextureDeclaration
+  },
+  specularMap: {
+    default: null,
+    cast: processTextureDeclaration
+  },
+  alphaMap: {
+    default: null,
+    cast: processTextureDeclaration
+  },
+  envMap: {
+    default: null,
+    cast: processTextureDeclaration
+  },
   reflectivity: {
 		default: 1,
 		cast: CAST_FLOAT_0_1
@@ -300,25 +379,35 @@ export const PROPERTIES = {
    * MeshPhongMaterial properties
    *
    * Omitted:
-   *  map
-   *  lightMap
    *  lightMapIntensity
-   *  aoMap
    *  aoMapIntensity
-   *  emissiveMap
-   *  bumpMap
    *  bumpScale
-   *  normalMap
    *  normalScale
-   *  displacementMap
    *  displacementScale
    *  displacementBias
-   *  specularMap
-   *  alphaMap
-   *  envMap
    *  combine
    *
    */
+   lightMap: {
+     default: null,
+     cast: processTextureDeclaration
+   },
+   emissiveMap: {
+     default: null,
+     cast: processTextureDeclaration
+   },
+   bumpMap: {
+     default: null,
+     cast: processTextureDeclaration
+   },
+   normalMap: {
+     default: null,
+     cast: processTextureDeclaration
+   },
+   displacementMap: {
+     default: null,
+     cast: processTextureDeclaration
+   },
   specular: {
     default: new three.Color( 0x111111 ),
     cast: CAST_COLOR
