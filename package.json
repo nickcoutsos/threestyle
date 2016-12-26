@@ -2,7 +2,7 @@
   "name": "threestyle",
   "version": "0.1.0",
   "description": "three.js object styling via stylesheets",
-  "main": "index.js",
+  "main": "dist/threestyle.js",
   "scripts": {
     "demo": "webpack-dev-server -d --port=8080 --host=0.0.0.0",
     "build": "babel src -d dist --presets es2015",
