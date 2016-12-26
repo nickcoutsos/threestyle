@@ -21,7 +21,7 @@ export function getMaterial(rules) {
 
   if (!_cachedMaterials[key]) {
     _cachedMaterials[key] = createMaterial(
-      [].concat(...rules.map(({declarations}) => declarations))
+      [].concat(...rules.map(({declarations}) => declarations.filter(({type}) => type !== 'comment')))
         .reduce((style, {property, value}) => (style[property] = value, style), {})
     );
   }
