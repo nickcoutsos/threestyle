@@ -73,12 +73,14 @@ export function loadStyles() {
  * The graph will be monitored for changes to re-apply styles as needed.
  *
  * @param {three.Object3D} graph - the "root" of a hierarchy. Not necessarily a scene object.
- * @param {String} [style=undefined] - a specific set of styles or else whatever appropriate styles are found in the document.
+ * @param {String|Object} [options={}] - string contents of a stylesheet, an options object
+ * @param {String} [options.style=undefined] - a specific set of styles or else whatever appropriate styles can be found in the document.
  */
-export function applyStyle(graph, style) {
-  let load = style !== undefined
-    ? Promise.resolve(style)
-    : loadStyles();
+export function applyStyle(graph, options={}) {
+  let {style} = options,
+    load = style !== undefined
+      ? Promise.resolve(style)
+      : loadStyles();
 
   return load.then(style => {
     if (!style) {
