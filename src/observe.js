@@ -82,9 +82,11 @@ export default function observe(node, properties) {
   function propagateChangeEvents(child) {
     child.addEventListener('propertyChanged', listener);
     child.addEventListener('childUpdated', listener);
+    child.addEventListener('childrenUpdated', listener);
     child.addEventListener('removed', event => {
       child.removeEventListener('propertyChanged', listener);
       child.removeEventListener('childUpdated', listener);
+      child.removeEventListener('childrenUpdated', listener);
       listener(event);
     });
   }
@@ -94,6 +96,7 @@ export default function observe(node, properties) {
   node.add = (...children) => {
     children.forEach(propagateChangeEvents);
     originalAdd(...children.map(child => observe(child, properties)));
+    node.dispatchEvent({ type: 'childrenUpdated', context: node});
   };
 
   return proxy;
