@@ -54,8 +54,6 @@ scene.add(
   ring
 );
 
-applyStyle(scene);
-
 document.body.appendChild(renderer.domElement);
 
 var clock = 0,
@@ -91,4 +89,4 @@ window.addEventListener('resize', () => {
 	render();
 });
 
-render();
+applyStyle(scene, {update: 'node'}).then(render);
