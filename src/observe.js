@@ -20,15 +20,22 @@
 function proxyChangeHandler(object, props, callback) {
   let proxy = new Proxy(object, {
     set(target, property, value) {
-      if (!props || props.indexOf(property) !== -1) {
-        if (value instanceof Object) {
-          value = proxyChangeHandler(value, null, callback);
-        }
+      let observedProp = !props || props.indexOf(property) !== -1;
 
+      // observed properties that are objects must themselves be replaced
+      // with proxies so we can observe nested properties as well.
+      if (observedProp && value instanceof Object) {
+        value = proxyChangeHandler(value, null, callback);
+      }
+
+      // update the target's property before notifying observer because they may
+      // be relying on the current state of the target and not the callback args
+      target[property] = value;
+
+      if (observedProp) {
         callback(property, target[property], value);
       }
 
-      target[property] = value;
       return true;
     }
   });
