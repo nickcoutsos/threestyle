@@ -33,6 +33,38 @@ export function getMaterial(rules) {
 
 
 /**
+ * Search the document for `style` and `link[rel="stylesheet"]` tags.
+ *
+ * @returns {Promise} - resolves with the string contents of any embedded or
+ *  linked styles concatenated in the order of their appearance.
+ */
+export function loadStyles() {
+  let sources = [].slice.call(
+    document.querySelectorAll([
+      'head link[type="text/threejs+css"]',
+      'head style[type="text/threejs+css"]'
+    ])
+  );
+
+  return Promise.all(
+    sources.map(source => {
+      // embedded styles can resolve right away
+      if (source.tagName === 'STYLE') {
+        return Promise.resolve(source.textContent);
+      }
+
+      // linked styles must be fetched asynchronously
+      return fetch(source.href)
+        .then(res => {
+          if (!res.ok) throw Object.assign(new Error(res.statusText), {res});
+          return res.text();
+        })
+    })
+  ).then(styles => styles.join('\n'));
+}
+
+
+/**
  * Apply a material stylesheet to the given scene graph.
  *
  * Stylesheet may be given as a string or omitted to automatically find <style>
@@ -44,25 +76,24 @@ export function getMaterial(rules) {
  * @param {String} [style=undefined] - a specific set of styles or else whatever appropriate styles are found in the document.
  */
 export function applyStyle(graph, style) {
-  if (style === undefined) {
-    let styles = [].slice.call(document.head.querySelectorAll('style[type="text/threejs+css"]'));
-    if (styles.length === 0) {
-      console.warn('No styles provided and none found in document.');
+  let load = style !== undefined
+    ? Promise.resolve(style)
+    : loadStyles();
+
+  return load.then(style => {
+    if (!style) {
+      console.warn('No styles provided or found in document.');
       return;
     }
 
-    style = styles
-      .map(style => style.textContent)
-      .join('\n');
-  }
+    let {stylesheet} = parse(style);
+    stylesheet.rules = stylesheet.rules.filter(NON_COMMENT_NODE)
+    stylesheet.rules.forEach(rule => rule.id = rule.id || ++_lastId);
 
-  let {stylesheet} = parse(style);
-  stylesheet.rules = stylesheet.rules.filter(NON_COMMENT_NODE)
-  stylesheet.rules.forEach(rule => rule.id = rule.id || ++_lastId);
-
-  updateStyle(graph, stylesheet.rules);
-  observe(graph, ['name', 'userData']);
-  graph.addEventListener('childUpdated', () => updateStyle(graph, stylesheet.rules));
+    updateStyle(graph, stylesheet.rules);
+    observe(graph, ['name', 'userData']);
+    graph.addEventListener('childUpdated', () => updateStyle(graph, stylesheet.rules));
+  });
 }
 
 
