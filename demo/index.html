@@ -2,41 +2,13 @@
 <html>
   <head>
     <title>threestyle - demo</title>
+    <link rel="stylesheet" href="assets/materials.three.css" type="text/threejs+css" />
     <style type="text/css">
       body { background-color: hsl(0, 0%, 15%); margin: 0; padding: 0; font-family: sans-serif;}
       canvas {
         display: block;
         padding: 0;
         margin: 0;
-      }
-    </style>
-    <style type="text/threejs+css">
-      SphereGeometry {
-        color: white;
-        map: url(assets/ROCKY_GROUND_DIFF.png) MirroredRepeatWrapping 2 1;
-        specularMap: url(assets/ROCKY_GROUND_SPEC.png) MirroredRepeatWrapping 2 1;
-        displacementMap: url(assets/ROCKY_GROUND_DISP.png) MirroredRepeatWrapping 2 1;
-        normalMap: url(assets/ROCKY_GROUND_NORM.png) MirroredRepeatWrapping 2 1;
-      }
-      BoxGeometry {
-        color: blue;
-      }
-      .floor {
-        color: grey;
-      }
-      .dull {
-        shininess: 1;
-      }
-      .ghost {
-        transparent: true;
-        opacity: 0.5;
-      }
-      .selected {
-        color: yellow;
-      }
-      .matrix {
-        wireframe: true;
-        color: green;
       }
     </style>
   </head>
