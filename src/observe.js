@@ -59,7 +59,7 @@ export default function observe(node, properties) {
     }
   );
 
-  let originalAdd = node.add;
+  let originalAdd = node.add.bind(node);
   let listener = event => {
     node.dispatchEvent({
       type: 'childUpdated',
