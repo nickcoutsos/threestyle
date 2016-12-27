@@ -63,7 +63,7 @@ export default function observe(node, properties) {
   let listener = event => {
     node.dispatchEvent({
       type: 'childUpdated',
-      context: event.context
+      context: event.context || event.target
     });
   };
 

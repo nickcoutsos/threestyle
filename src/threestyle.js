@@ -75,9 +75,13 @@ export function loadStyles() {
  * @param {three.Object3D} graph - the "root" of a hierarchy. Not necessarily a scene object.
  * @param {String|Object} [options={}] - string contents of a stylesheet, an options object
  * @param {String} [options.style=undefined] - a specific set of styles or else whatever appropriate styles can be found in the document.
+ * @param {String} [options.update='full'] - update strategy. Options are:
+ *  * `"full"` re-match all rules against all nodes,
+ *  * `"node"` re-match all rules against only the node that changed, or
+ *  * `"none"` don't do any updates
  */
-export function applyStyle(graph, options={}) {
-  let {style} = options,
+export function applyStyle(graph, options={update:'full'}) {
+  let {style, update} = options,
     load = style !== undefined
       ? Promise.resolve(style)
       : loadStyles();
@@ -92,9 +96,21 @@ export function applyStyle(graph, options={}) {
     stylesheet.rules = stylesheet.rules.filter(NON_COMMENT_NODE)
     stylesheet.rules.forEach(rule => rule.id = rule.id || ++_lastId);
 
-    updateStyle(graph, stylesheet.rules);
+    updateGraph(graph, stylesheet.rules);
+
+    if (!update || update === 'none') {
+      return;
+    }
+
     observe(graph, ['name', 'userData']);
-    graph.addEventListener('childUpdated', () => updateStyle(graph, stylesheet.rules));
+    graph.addEventListener('childUpdated', event => {
+      if (update === 'full') {
+        updateGraph(graph, stylesheet.rules);
+      }
+      else {
+        updateNode(event.context, stylesheet.rules);
+      }
+    });
   });
 }
 
@@ -105,16 +121,25 @@ export function applyStyle(graph, options={}) {
  * @param {three.Object3D} graph
  * @param {Array<Object>} rules - a set of available rules to match to the graph's nodes
  */
-export function updateStyle(graph, rules) {
-  graph.traverse(node => {
-    let matchedRules = rules.filter(
-      ({selectors}) => select(selectors.join(', '))(node)
-    );
+export function updateGraph(graph, rules) {
+  graph.traverse(node => updateNode(node, rules));
+}
 
-    if (matchedRules.length > 0) {
-      node.material = getMaterial(matchedRules);
-    }
-  });
+
+/**
+ * Update the material of the given node depending on which rules it matches.
+ *
+ * @param {three.Object3D} node
+ * @param {Array<Object>} rules - a set of available rules to match to the node
+ */
+export function updateNode(node, rules) {
+  let matchedRules = rules.filter(
+    ({selectors}) => select(selectors.join(', '))(node)
+  );
+
+  if (matchedRules.length > 0) {
+    node.material = getMaterial(matchedRules);
+  }
 }
 
 export default {getMaterial};

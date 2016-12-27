@@ -1,6 +1,6 @@
 {
   "name": "threestyle",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "three.js object styling via stylesheets",
   "main": "dist/threestyle.js",
   "scripts": {
