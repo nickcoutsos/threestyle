@@ -15,6 +15,10 @@ export default function createMaterial(properties, defaultType='MeshPhongMateria
   });
 
   Object.keys(materialProperties).forEach(key => {
+    if (!(key in PROPERTIES)) {
+      return;
+    }
+
     let property = PROPERTIES[key],
       value = materialProperties[key],
       constructor = property && property.cast || property.default.constructor;
@@ -426,6 +430,21 @@ export const PROPERTIES = {
   },
   morphNormals: {
     default: false,
+    cast: Boolean
+  },
+
+
+  /**
+   *
+   * PointsMaterial properties
+   *
+   */
+  size: {
+    default: 1.0,
+    cast: Number
+  },
+  sizeAttenuation: {
+    default: true,
     cast: Boolean
   }
 }
