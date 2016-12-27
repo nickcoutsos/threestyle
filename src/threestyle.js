@@ -7,6 +7,8 @@ import observe from './observe';
 var _lastId = 0;
 var _cachedMaterials = {};
 
+const NON_COMMENT_NODE = ({type}) => type !== 'comment';
+
 /**
  * Get a material instance made up of the declarations in the given rules.
  *
@@ -21,7 +23,7 @@ export function getMaterial(rules) {
 
   if (!_cachedMaterials[key]) {
     _cachedMaterials[key] = createMaterial(
-      [].concat(...rules.map(({declarations}) => declarations.filter(({type}) => type !== 'comment')))
+      [].concat(...rules.map(({declarations}) => declarations.filter(NON_COMMENT_NODE)))
         .reduce((style, {property, value}) => (style[property] = value, style), {})
     );
   }
@@ -55,6 +57,7 @@ export function applyStyle(graph, style) {
   }
 
   let {stylesheet} = parse(style);
+  stylesheet.rules = stylesheet.rules.filter(NON_COMMENT_NODE)
   stylesheet.rules.forEach(rule => rule.id = rule.id || ++_lastId);
 
   updateStyle(graph, stylesheet.rules);
