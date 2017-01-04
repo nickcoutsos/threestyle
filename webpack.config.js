@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './demo/index.js',
+  entry: './demo/app.js',
   output: { path: './demo-dist/', filename: 'bundle.js' },
   module: {
     loaders: [
@@ -11,8 +11,13 @@ module.exports = {
           presets: ['es2015']
         }
       },
-      { test: /\.json$/, loader: 'json' }
+      { test: /\.css/, loader: 'style!css' }
     ]
+  },
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.common.js'
+    }
   },
   devServer: {
     contentBase: './demo',
