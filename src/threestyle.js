@@ -80,7 +80,13 @@ export function loadStyles() {
  *  * `"node"` re-match all rules against only the node that changed, or
  *  * `"none"` don't do any updates
  */
-export function applyStyle(graph, options={update:'full'}) {
+export function applyStyle(graph, options) {
+  if (typeof options !== 'object') {
+    options = {style: options, update: 'full'};
+  }
+
+  options.update = options.update || 'full';
+
   let {style, update} = options,
     load = style !== undefined
       ? Promise.resolve(style)
