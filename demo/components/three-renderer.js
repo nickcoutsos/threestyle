@@ -8,6 +8,8 @@ export default Vue.component('three-renderer', {
 
   created() {
     this.renderer = new three[this.type]();
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = three.PCFSoftShadowMap;
   },
 
   mounted() {
