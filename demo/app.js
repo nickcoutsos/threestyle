@@ -16,7 +16,9 @@ new Vue({
     scene: new three.Scene(),
     camera: new three.PerspectiveCamera(70, 1, 1, 1000),
     sceneCode: defaultScene,
-    styleCode: defaultStyle
+    styleCode: defaultStyle,
+    sceneBuilder: () => {},
+    style: defaultStyle
   },
 
   created() {
@@ -24,13 +26,22 @@ new Vue({
     this.camera.lookAt(new three.Vector3(0, 0, 0));
   },
 
+  mounted() {
+    this.updateScene(this.sceneCode);
+  },
+
   methods: {
     updateScene: debounce(function(sceneCode) {
-      let scene = new three.Scene();
       try {
-        new Function('three', 'scene', `"use strict";\n${sceneCode}`)(three, scene);
-        this.scene.remove(this.camera);
-        this.scene = scene;
+        let func = new Function('three', 'scene', `"use strict";\n${sceneCode}`),
+          builder = () => {
+            let scene = new three.Scene();
+            func(three, scene);
+            return scene;
+          };
+
+        builder();
+        this.sceneBuilder = builder;
       }
       catch (e) {
         console.error('Exception in scene code, could not update');
@@ -38,16 +49,28 @@ new Vue({
       }
     }, 200),
 
-    updateStyle: debounce(function(styleCode) {
+    updateStyle: debounce(function(style) {
       // TODO: validate style code
+      this.style = style;
+    }, 200),
 
-      applyStyle(this.scene, styleCode);
-    }, 200)
+
+    refresh() {
+      let scene = this.sceneBuilder();
+      applyStyle(scene, {style: this.style, update: 'node'});
+
+      scene.add(this.camera);
+      this.scene = scene;
+    }
   },
 
-  watches: {
-    scene() {
-      this.scene.add(this.camera);
+  watch: {
+    sceneBuilder() {
+      this.refresh();
+    },
+
+    style() {
+      this.refresh();
     }
   }
 });
