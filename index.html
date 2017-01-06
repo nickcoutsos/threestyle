@@ -2,17 +2,74 @@
 <html>
   <head>
     <title>threestyle - demo</title>
-    <link rel="stylesheet" href="assets/materials.three.css" type="text/threejs+css" />
     <style type="text/css">
       body { background-color: hsl(0, 0%, 15%); margin: 0; padding: 0; font-family: sans-serif;}
+      html, body {
+        height: 100%;
+      }
       canvas {
         display: block;
         padding: 0;
         margin: 0;
       }
+      #app {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+      }
+      #viewer {
+        height: 100%;
+        flex-grow: .6;
+      }
+      #viewer canvas {
+        position: absolute;
+      }
+      #editors { flex-grow: 0.4; }
+      #editors .CodeMirror {
+        position: absolute;
+        height: 100%;
+      }
+
+      .resizable-container { display: flex; }
+      .resizable-container > * { position: relative; }
+      .resizable-container.resize-horizontal { flex-direction: row; }
+      .resizable-container.resize-horizontal > * { height: 100%; flex-grow: 1; overflow: auto; }
+      .resizable-container.resize-vertical { flex-direction: column; }
+      .resizable-container.resize-vertical > * { width: 100%; flex-grow: 1; overflow: auto; }
+      .resize-widget {
+        background-color: #555;
+        padding: 0;
+        margin: 0;
+        flex-grow: 0 !important;
+      }
+      .resizable-container.resize-horizontal .resize-widget { width: 4px; height: 100%; cursor: col-resize; }
+      .resizable-container.resize-vertical .resize-widget { width: 100%; height: 4px; cursor: row-resize; }
     </style>
   </head>
   <body>
+    <resizable-panel id="app" flow="horizontal" @resize="onPanelResize">
+      <three-renderer
+        id="viewer"
+        ref="renderer"
+        type="WebGLRenderer"
+        :camera="camera"
+        :scene="scene">
+      </three-renderer>
+
+      <resizable-panel id="editors" flow="vertical">
+        <codemirror-editor
+          mode="javascript"
+          :value="sceneCode"
+          @change="updateScene">
+        </codemirror-editor>
+
+        <codemirror-editor
+          mode="text/threejs+css"
+          :value="styleCode"
+          @change="updateStyle">
+        </codemirror-editor>
+      </resizable-panel>
+    </resizable-panel>
     <script src="bundle.js"></script>
   </body>
 </html>
