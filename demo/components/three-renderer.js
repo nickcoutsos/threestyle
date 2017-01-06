@@ -17,6 +17,7 @@ export default Vue.component('three-renderer', {
     this.$el.appendChild(this.renderer.domElement);
     window.addEventListener('resize', () => this.onResize());
     this.onResize();
+    this.animate();
   },
 
   methods: {
@@ -34,7 +35,11 @@ export default Vue.component('three-renderer', {
     renderFrame() {
       let {scene, camera, renderer} = this;
       renderer.render(scene, camera);
-      requestAnimationFrame(() => this.renderFrame());
+    },
+
+    animate() {
+      this.renderFrame();
+      requestAnimationFrame(this.animate);
     }
   },
 
