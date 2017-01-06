@@ -1,3 +1,4 @@
+import debounce from 'debounce';
 import Vue from 'vue';
 import * as three from 'three';
 
@@ -19,7 +20,7 @@ export default Vue.component('three-renderer', {
   },
 
   methods: {
-    onResize() {
+    onResize: debounce(function() {
 			this.renderer.domElement.style = {};
 			this.renderer.domElement.removeAttribute('width');
 
@@ -28,7 +29,7 @@ export default Vue.component('three-renderer', {
 			this.camera.aspect = width / height;
 			this.camera.updateProjectionMatrix();
 			this.renderFrame();
-    },
+    }, 200),
 
     renderFrame() {
       let {scene, camera, renderer} = this;
