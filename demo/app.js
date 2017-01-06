@@ -5,6 +5,7 @@ import * as three from 'three';
 import {applyStyle} from '../src/threestyle';
 import './components/codemirror-editor';
 import './components/three-renderer';
+import './components/resizable-panel';
 import './threestyle-mode';
 
 import defaultScene from '!raw-loader!./default-scene.js';
@@ -53,6 +54,10 @@ new Vue({
       // TODO: validate style code
       this.style = style;
     }, 200),
+
+    onPanelResize() {
+      this.$refs.renderer.onResize();
+    },
 
 
     refresh() {

@@ -18,35 +18,45 @@
         height: 100%;
       }
       #viewer {
-        width: 60%;
         height: 100%;
+        flex-grow: .6;
       }
-      #editors {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 2;
-        overflow: hidden;
+      #viewer canvas {
+        position: absolute;
       }
-      #editors > div {
-        flex-grow: 1;
-        height: 50%;
-      }
+      #editors { flex-grow: 0.4; }
       #editors .CodeMirror {
+        position: absolute;
         height: 100%;
-        margin: 4px 0;
       }
+
+      .resizable-container { display: flex; }
+      .resizable-container > * { position: relative; }
+      .resizable-container.resize-horizontal { flex-direction: row; }
+      .resizable-container.resize-horizontal > * { height: 100%; flex-grow: 1; overflow: auto; }
+      .resizable-container.resize-vertical { flex-direction: column; }
+      .resizable-container.resize-vertical > * { width: 100%; flex-grow: 1; overflow: auto; }
+      .resize-widget {
+        background-color: #555;
+        padding: 0;
+        margin: 0;
+        flex-grow: 0 !important;
+      }
+      .resizable-container.resize-horizontal .resize-widget { width: 4px; height: 100%; cursor: col-resize; }
+      .resizable-container.resize-vertical .resize-widget { width: 100%; height: 4px; cursor: row-resize; }
     </style>
   </head>
   <body>
-    <div id="app">
+    <resizable-panel id="app" flow="horizontal" @resize="onPanelResize">
       <three-renderer
         id="viewer"
+        ref="renderer"
         type="WebGLRenderer"
         :camera="camera"
         :scene="scene">
       </three-renderer>
 
-      <div id="editors">
+      <resizable-panel id="editors" flow="vertical">
         <codemirror-editor
           mode="javascript"
           :value="sceneCode"
@@ -58,8 +68,8 @@
           :value="styleCode"
           @change="updateStyle">
         </codemirror-editor>
-      </div>
-    </div>
+      </resizable-panel>
+    </resizable-panel>
     <script src="bundle.js"></script>
   </body>
 </html>
