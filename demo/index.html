@@ -25,9 +25,24 @@
         position: absolute;
       }
       #editors { flex-grow: 0.4; }
+      #editors h2 {
+        color: white;
+        font-size: 1.2em;
+        padding: 0;
+        margin: 5px;
+      }
+      #editors .panel {
+        display: flex;
+        flex-direction: column;
+      }
+      #editors .editor {
+        flex-grow: 1;
+        position: relative;
+      }
       #editors .CodeMirror {
         position: absolute;
         height: 100%;
+        width: 100%;
       }
 
       .resizable-container { display: flex; }
@@ -57,17 +72,25 @@
       </three-renderer>
 
       <resizable-panel id="editors" flow="vertical">
-        <codemirror-editor
-          mode="javascript"
-          :value="sceneCode"
-          @change="updateScene">
-        </codemirror-editor>
+        <div class="panel">
+          <h2>Scene</h2>
+          <codemirror-editor
+            class="editor"
+            mode="javascript"
+            :value="sceneCode"
+            @change="updateScene">
+          </codemirror-editor>
+        </div>
 
-        <codemirror-editor
-          mode="text/threejs+css"
-          :value="styleCode"
-          @change="updateStyle">
-        </codemirror-editor>
+        <div class="panel">
+          <h2>Style</h2>
+          <codemirror-editor
+            class="editor"
+            mode="text/threejs+css"
+            :value="styleCode"
+            @change="updateStyle">
+          </codemirror-editor>
+        </div>
       </resizable-panel>
     </resizable-panel>
     <script src="bundle.js"></script>
