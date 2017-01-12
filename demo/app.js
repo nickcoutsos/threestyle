@@ -3,7 +3,7 @@ import Vue from 'vue';
 import * as three from 'three';
 
 import {applyStyle} from '../src/threestyle';
-import './components/codemirror-editor';
+import './components/live-editor';
 import './components/three-renderer';
 import './components/resizable-panel';
 import './threestyle-mode';
