@@ -2,6 +2,8 @@
 <html>
   <head>
     <title>threestyle - demo</title>
+    <meta charset="UTF-8">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <style type="text/css">
       body { background-color: hsl(0, 0%, 15%); margin: 0; padding: 0; font-family: sans-serif;}
       html, body {
@@ -25,10 +27,42 @@
         position: absolute;
       }
       #editors { flex-grow: 0.4; }
+      #editors h2 {
+        color: white;
+        font-size: 1.2em;
+        padding: 0;
+        margin: 5px 10px;
+      }
+      #editors .panel {
+        display: flex;
+        flex-direction: column;
+      }
+      #editors .editor {
+        flex-grow: 1;
+        position: relative;
+      }
       #editors .CodeMirror {
         position: absolute;
         height: 100%;
+        width: 100%;
       }
+
+      #editors .buttons {
+        position: absolute;
+        right: 10px;
+        top: 5px;
+
+      }
+      #editors .buttons button {
+        color: white;
+        background-color: hsl(222, 19%, 18%);
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+      }
+
+      #editors .buttons button:focus { outline: none }
+      #editors .buttons button i { margin: 5px }
 
       .resizable-container { display: flex; }
       .resizable-container > * { position: relative; }
@@ -57,17 +91,21 @@
       </three-renderer>
 
       <resizable-panel id="editors" flow="vertical">
-        <codemirror-editor
+        <live-editor
+          title="Scene"
+          class="panel"
           mode="javascript"
           :value="sceneCode"
           @change="updateScene">
-        </codemirror-editor>
+        </live-editor>
 
-        <codemirror-editor
+        <live-editor
+          title="Style"
+          class="panel"
           mode="text/threejs+css"
           :value="styleCode"
           @change="updateStyle">
-        </codemirror-editor>
+        </live-editor>
       </resizable-panel>
     </resizable-panel>
     <script src="bundle.js"></script>
