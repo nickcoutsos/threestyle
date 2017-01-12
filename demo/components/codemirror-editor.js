@@ -7,7 +7,7 @@ import 'codemirror/mode/css/css';
 
 export default Vue.component('codemirror-editor', {
 	props: ['mode', 'value'],
-	data: () => ({}),
+	data: () => ({value: null}),
 
 	mounted() {
     let textarea = this.$el.querySelector('textarea');
@@ -18,10 +18,18 @@ export default Vue.component('codemirror-editor', {
       value: this.value || '',
     };
 
-    CodeMirror(editor => this.$el.replaceChild(editor, textarea), config)
-      .on('change', instance => {
-        this.$emit('change', instance.getValue())
-      });
+    this.instance = CodeMirror(editor => this.$el.replaceChild(editor, textarea), config);
+    this.instance.on('change', instance => {
+      this.$emit('change', instance.getValue())
+    });
+	},
+
+	watch: {
+		value() {
+			if (this.instance.getValue() !== this.value) {
+				this.instance.setValue(this.value);
+			}
+		}
 	},
 
 	render(h) {
